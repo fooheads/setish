@@ -5,6 +5,7 @@
   https://github.com/clojure/clojure/blob/c89bf2e9bcfc1bca62e36dee2d78a48f8c38c15c/test/clojure/test_clojure/clojure_set.clj
   "
   (:require
+    [clojure.string :as str]
     [clojure.test :refer [deftest are]]
     [fooheads.setish :as set]))
 
@@ -289,4 +290,13 @@
               {:composer :composer-name})
     #{{:composer-name "J. S. Bach" :genre "Classical" :name "Art of the Fugue" :composer "J. S. Bach"}
       {:composer-name "J. S. Bach" :genre "Classical" :name "Musical Offering" :composer "J. S. Bach"}}))
+
+
+(deftest update-test
+  (are [x y] (= x y)
+    (set/update compositions :name str/upper-case)
+    #{{:name "ART OF THE FUGUE" :composer "J. S. Bach"}
+      {:name "MUSICAL OFFERING" :composer "J. S. Bach"}
+      {:name "REQUIEM" :composer "Giuseppe Verdi"}
+      {:name "REQUIEM" :composer "W. A. Mozart"}}))
 

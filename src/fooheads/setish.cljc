@@ -1,4 +1,5 @@
 (ns fooheads.setish
+  (:refer-clojure :exclude [update])
   (:require
     [clojure.set :as set]
     [fooheads.stdlib :as std :refer [map-vals]]))
@@ -156,4 +157,10 @@
              ys)))
        (empty xrel)
        (setish xrel)))))
+
+
+(defn update
+  "Like clojure.core/update, but works on each tuple in a rel."
+  ([xrel k f & args]
+   (std/mapt (fn [tuple] (apply clojure.core/update tuple k f args)) xrel)))
 
