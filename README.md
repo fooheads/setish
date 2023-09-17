@@ -12,4 +12,6 @@ functions:
     * setish - returns a collection without duplicates
     * restrict - same as select, but with xrel in fist position to play
     well with (-> ...)
+    * update 
+    * index-unique
 

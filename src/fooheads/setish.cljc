@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [update])
   (:require
     [clojure.set :as set]
-    [fooheads.stdlib :as std :refer [map-vals]]))
+    [fooheads.stdlib :as std :refer [map-vals throw-ex]]))
 
 
 (defn setish
@@ -42,6 +42,23 @@
   (map-vals
     #(into (empty xrel) %)
     (group-by #(select-keys % ks) (setish xrel))))
+
+
+(defn index-unique
+  "Like `index` but requires that each key only have one value. The vals in the
+  index is a single value and not in a collection like with `index`. Throws
+  if the unique constraint is not met."
+  [xrel ks]
+  (let [index (index xrel ks)]
+    (->>
+      index
+      (map
+        (fn [[k xs]]
+          (cond
+            (not= 1 (count xs)) (throw-ex "Not exactly one value for key {k}"
+                                          xrel k ks xs)
+            :else [k (first xs)])))
+      (into {}))))
 
 
 (defn difference

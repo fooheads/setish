@@ -1,6 +1,6 @@
 {:paths ["src"]
  :deps
- {com.fooheads/stdlib              {:mvn/version "0.3.3"}}
+ {com.fooheads/stdlib              {:mvn/version "0.3.4"}}
 
  :aliases
  {:test
