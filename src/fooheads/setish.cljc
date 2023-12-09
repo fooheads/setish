@@ -1,5 +1,5 @@
 (ns fooheads.setish
-  (:refer-clojure :exclude [update])
+  (:refer-clojure :exclude [extend update])
   (:require
     [clojure.set :as set]
     [fooheads.stdlib :as std :refer [map-vals throw-ex]]))
@@ -180,4 +180,11 @@
   "Like clojure.core/update, but works on each tuple in a rel."
   ([xrel k f & args]
    (std/mapt (fn [tuple] (apply clojure.core/update tuple k f args)) xrel)))
+
+
+(defn extend
+  "Extends each tuple by assoc:ing k to the result of (f tuple).
+  k can either be a new key or an existing key."
+  ([xrel k f]
+   (std/mapt (fn [tuple] (assoc tuple k (f tuple))) xrel)))
 
