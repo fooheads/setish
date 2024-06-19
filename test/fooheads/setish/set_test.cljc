@@ -6,7 +6,7 @@
   "
   (:require
     [clojure.string :as str]
-    [clojure.test :refer [deftest are]]
+    [clojure.test :refer [are deftest testing]]
     [fooheads.setish :as set]))
 
 
@@ -302,12 +302,39 @@
 
 
 (deftest extend-test
-  (are [x y] (= x y)
-    (set/extend compositions :short
-                (fn [tuple]
-                  (str (subs (:name tuple) 0 3) "...")))
-    #{{:name "Art of the Fugue" :short "Art..." :composer "J. S. Bach"}
-      {:name "Musical Offering" :short "Mus..." :composer "J. S. Bach"}
-      {:name "Requiem"          :short "Req..." :composer "Giuseppe Verdi"}
-      {:name "Requiem"          :short "Req..." :composer "W. A. Mozart"}}))
+  (testing "single"
+    (are [x y] (= x y)
+      (set/extend
+        compositions
+        :short (fn [tuple]
+                 (str (subs (:name tuple) 0 3) "...")))
+
+      #{{:name "Art of the Fugue" :short "Art..." :composer "J. S. Bach"}
+        {:name "Musical Offering" :short "Mus..." :composer "J. S. Bach"}
+        {:name "Requiem"          :short "Req..." :composer "Giuseppe Verdi"}
+        {:name "Requiem"          :short "Req..." :composer "W. A. Mozart"}}))
+
+  (testing "multiple, map"
+    (are [x y] (= x y)
+      (set/extend
+        compositions
+        {:short (fn [tuple]
+                  (str (subs (:name tuple) 0 3) "..."))})
+
+      #{{:name "Art of the Fugue" :short "Art..." :composer "J. S. Bach"}
+        {:name "Musical Offering" :short "Mus..." :composer "J. S. Bach"}
+        {:name "Requiem"          :short "Req..." :composer "Giuseppe Verdi"}
+        {:name "Requiem"          :short "Req..." :composer "W. A. Mozart"}}))
+
+  (testing "multiple, ordered"
+    (are [x y] (= x y)
+      (set/extend
+        compositions
+        [[:short (fn [tuple]
+                   (str (subs (:name tuple) 0 3) "..."))]])
+
+      #{{:name "Art of the Fugue" :short "Art..." :composer "J. S. Bach"}
+        {:name "Musical Offering" :short "Mus..." :composer "J. S. Bach"}
+        {:name "Requiem"          :short "Req..." :composer "Giuseppe Verdi"}
+        {:name "Requiem"          :short "Req..." :composer "W. A. Mozart"}})))
 

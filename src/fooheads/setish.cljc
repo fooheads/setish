@@ -184,7 +184,20 @@
 
 (defn extend
   "Extends each tuple by assoc:ing k to the result of (f tuple).
-  k can either be a new key or an existing key."
+  k can either be a new key or an existing key.
+  
+  A map from k to f can also be specified, to extend multiple
+  attributes in one call."
+
+  ([xrel m]
+   (std/mapt
+     (fn [tuple]
+       (reduce
+         (fn [tuple [k f]]
+           (assoc tuple k (f tuple)))
+         tuple
+         m))
+     xrel))
   ([xrel k f]
    (std/mapt (fn [tuple] (assoc tuple k (f tuple))) xrel)))
 
