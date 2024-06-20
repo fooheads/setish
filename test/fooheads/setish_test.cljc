@@ -83,3 +83,13 @@
                [:a]))))))
 
 
+(deftest order-by-test
+  (is (= [{:rank 1} {:rank 2} {:rank 3}]
+         (set/order-by [{:rank 2} {:rank 3} {:rank 1}] :rank)))
+
+  (is (= [{:rank 3} {:rank 2} {:rank 1}]
+         (set/order-by
+           [{:rank 2} {:rank 3} {:rank 1}]
+           :rank
+           #(compare %2 %1)))))
+

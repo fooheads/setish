@@ -185,7 +185,7 @@
 (defn extend
   "Extends each tuple by assoc:ing k to the result of (f tuple).
   k can either be a new key or an existing key.
-  
+
   A map from k to f can also be specified, to extend multiple
   attributes in one call."
 
@@ -200,4 +200,13 @@
      xrel))
   ([xrel k f]
    (std/mapt (fn [tuple] (assoc tuple k (f tuple))) xrel)))
+
+
+(defn order-by
+  "Orders the tuples according to keyfn and an optional comparator.
+  Same behavior as `clojure.core/sort-by`, but with xrel in first position."
+  ([xrel keyfn]
+   (sort-by keyfn xrel))
+  ([xrel keyfn comp]
+   (sort-by keyfn comp xrel)))
 
