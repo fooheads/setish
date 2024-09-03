@@ -161,11 +161,34 @@
      (join xrel yrel km)))
 
   ([xrel yrel km]
-   (let [index (index (set yrel) (vals km))]
+   (let [index (index yrel (vals km))]
      (reduce
        (fn [rel x]
          (let [xprojection (select-keys x (keys km))
                ys (get index (rename-keys xprojection km))]
+           (reduce
+             (fn [rel y]
+               (let [merged (merge x y)]
+                 (conj rel merged)))
+             rel
+             ys)))
+       (empty xrel)
+       (setish xrel)))))
+
+
+(defn left-join
+  "Joins, but always keeps enerything on the left, even if there is no
+  match on the right. Each row will contain all keys from the left, plus
+  all keys in the km (possibly with nil values), and, when there is a match,
+  all keys from the right."
+  ([xrel yrel km]
+   (let [index (index yrel (vals km))]
+     (reduce
+       (fn [rel x]
+         (let [xprojection (select-keys x (keys km))
+               yprojection (rename-keys xprojection km)
+               ys (or (get index yprojection)
+                      (zipmap (keys yprojection) (repeat nil)))]
            (reduce
              (fn [rel y]
                (let [merged (merge x y)]

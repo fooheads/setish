@@ -287,6 +287,51 @@
      {:name "Musical Offering" :composer "J. S. Bach" :composer-name "J. S. Bach" :genre "Classical"}]))
 
 
+(deftest left-join-test
+  (are [x y] (= x y)
+    ;;
+    ;; key join with matching keys and no matching values
+    ;;
+    (set/left-join
+      compositions
+      [{:composer-name "Taylor Swift" :genre "Pop"}]
+      {:composer :composer-name})
+
+    [{:name "Art of the Fugue" :composer "J. S. Bach" :composer-name nil}
+     {:name "Musical Offering" :composer "J. S. Bach" :composer-name nil}
+     {:name "Requiem" :composer "Giuseppe Verdi" :composer-name nil}
+     {:name "Requiem" :composer "W. A. Mozart" :composer-name nil}]
+
+    ;;
+    ;; key join with matching keys and some matching values
+    ;;
+    (set/left-join
+      compositions
+      [{:composer-name "J. S. Bach" :genre "Classical"}]
+      {:composer :composer-name})
+
+    [{:name "Art of the Fugue" :composer "J. S. Bach" :composer-name "J. S. Bach" :genre "Classical"}
+     {:name "Musical Offering" :composer "J. S. Bach" :composer-name "J. S. Bach" :genre "Classical"}
+     {:name "Requiem" :composer "Giuseppe Verdi" :composer-name nil}
+     {:name "Requiem" :composer "W. A. Mozart" :composer-name nil}]
+
+    ;;
+    ;; match returning more rows that the left contains
+    ;;
+    (set/left-join
+      [{:composer-name "J. S. Bach" :genre "Classical"}
+       {:composer-name "J. S. Bach" :genre "Baroque"}
+       {:composer-name "Ludwig van Beethoven" :genre "Classical"}]
+      compositions
+      {:composer-name :composer})
+
+    [{:composer-name "J. S. Bach"           :genre "Classical" :name "Art of the Fugue" :composer "J. S. Bach"}
+     {:composer-name "J. S. Bach"           :genre "Classical" :name "Musical Offering" :composer "J. S. Bach"}
+     {:composer-name "J. S. Bach"           :genre "Baroque"   :name "Art of the Fugue" :composer "J. S. Bach"}
+     {:composer-name "J. S. Bach"           :genre "Baroque"   :name "Musical Offering" :composer "J. S. Bach"}
+     {:composer-name "Ludwig van Beethoven" :genre "Classical"                          :composer nil}]))
+
+
 (deftest update-test
   (are [x y] (= x y)
     (set/update compositions :name str/upper-case)
