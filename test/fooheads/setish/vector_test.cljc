@@ -6,7 +6,7 @@
   "
   (:require
     [clojure.string :as str]
-    [clojure.test :refer [are deftest testing]]
+    [clojure.test :refer [are deftest is testing]]
     [fooheads.setish :as set]))
 
 
@@ -377,4 +377,45 @@
        {:name "Musical Offering" :short "Mus..." :composer "J. S. Bach"}
        {:name "Requiem"          :short "Req..." :composer "Giuseppe Verdi"}
        {:name "Requiem"          :short "Req..." :composer "W. A. Mozart"}])))
+
+
+(deftest aggregate-test
+  (testing "one aggregation"
+    (is (= [{:sum 6}]
+           (set/aggregate
+             [{:rank 2} {:rank 3} {:rank 1}]
+             :sum
+             (set/sum :rank)))))
+
+  (testing "multiple aggregations"
+    (is (= [{:sum 6 :count 3}]
+           (set/aggregate
+             [{:rank 2} {:rank 3} {:rank 1}]
+             {:sum (set/sum :rank)
+              :count count})))))
+
+
+(deftest aggregate-by-test
+  (testing "one aggregation"
+    (is (= [{:count 2 :composer "J. S. Bach"}
+            {:count 1 :composer "Giuseppe Verdi"}
+            {:count 1 :composer "W. A. Mozart"}]
+
+           (set/aggregate-by
+             compositions
+             [:composer]
+             :count
+             count))))
+
+  (testing "multiple aggregations"
+    (is (= [{:composer "J. S. Bach"     :count 2 :num-chars 32}
+            {:composer "Giuseppe Verdi" :count 1 :num-chars  7}
+            {:composer "W. A. Mozart"   :count 1 :num-chars  7}]
+
+           (set/aggregate-by
+             compositions
+             [:composer]
+             {:count count
+              :num-chars (fn [tuples]
+                           (->> tuples (map (comp count :name)) (apply +)))})))))
 

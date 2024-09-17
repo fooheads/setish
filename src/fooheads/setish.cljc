@@ -233,3 +233,44 @@
   ([xrel keyfn comp]
    (sort-by keyfn comp xrel)))
 
+
+(defn aggregate
+  "Applies f to the xrel and returns a relation with one tuple.
+  
+  In the case a map is provided in place of k and f, the same
+  procedure will be applied to all pairs of k and f in m."
+  ([xrel k f]
+   (aggregate xrel {k f}))
+
+  ([xrel m]
+   (->>
+     m
+     (mapv (fn [[k f]] [k (f xrel)]))
+     (into {})
+     (std/conjt (std/empty xrel)))))
+
+
+(defn aggregate-by
+  "Groups by agg-ks and aggregates the grouped relations."
+  ([xrel agg-ks k f]
+   (aggregate-by xrel agg-ks {k f}))
+
+  ([xrel agg-ks m]
+   (let [index (set/index xrel agg-ks)]
+     (->>
+       index
+       (mapv (fn [[index-key tuples]]
+               (reduce
+                 (fn [tuple [k f]]
+                   (assoc tuple k (f tuples)))
+                 index-key
+                 m)))
+       (into (std/empty xrel))))))
+
+
+(defn sum
+  "Convenience function to use with set aggregations."
+  [k]
+  (fn [xrel]
+    (reduce + 0 (map k xrel))))
+
