@@ -251,22 +251,49 @@
      (std/conjt (std/empty xrel)))))
 
 
+(defn- aggregate-by-map
+  [xrel agg-ks m]
+
+  (->>
+    (index xrel agg-ks)
+    (mapv
+      (fn [[index-key tuples]]
+        (reduce
+          (fn [tuple [k f]]
+            (assoc tuple k (f tuples)))
+          index-key
+          m)))
+
+    (into (std/empty xrel))))
+
+
+(defn- aggregate-by-fn
+  [xrel agg-ks f]
+
+  (->>
+    (index xrel agg-ks)
+    (mapcat
+      (fn [[_ tuples]]
+        (f tuples)))
+
+    (into (std/empty xrel))))
+
+
 (defn aggregate-by
-  "Groups by agg-ks and aggregates the grouped relations."
+  "Groups by agg-ks and aggregates the grouped relations.
+
+  If a function is provided, it is expected to take a relation
+  and return a relation"
   ([xrel agg-ks k f]
    (aggregate-by xrel agg-ks {k f}))
 
-  ([xrel agg-ks m]
-   (let [index (set/index xrel agg-ks)]
-     (->>
-       index
-       (mapv (fn [[index-key tuples]]
-               (reduce
-                 (fn [tuple [k f]]
-                   (assoc tuple k (f tuples)))
-                 index-key
-                 m)))
-       (into (std/empty xrel))))))
+  ([xrel agg-ks m-or-f]
+   (cond
+     (map? m-or-f)
+     (aggregate-by-map xrel agg-ks m-or-f)
+
+     (fn? m-or-f)
+     (aggregate-by-fn xrel agg-ks m-or-f))))
 
 
 (defn sum

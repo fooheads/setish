@@ -7,7 +7,8 @@
   (:require
     [clojure.string :as str]
     [clojure.test :refer [are deftest is testing]]
-    [fooheads.setish :as set]))
+    [fooheads.setish :as set]
+    [fooheads.stdlib :as std]))
 
 
 (def compositions
@@ -449,5 +450,18 @@
              [:composer]
              {:count count
               :num-chars (fn [tuples]
-                           (->> tuples (map (comp count :name)) (apply +)))})))))
+                           (->> tuples (map (comp count :name)) (apply +)))}))))
+
+  (testing "function aggregation"
+    (is (= compositions
+           (set/aggregate-by
+             compositions
+             [:composer]
+             identity)))
+
+    (is (= #{}
+           (set/aggregate-by
+             compositions
+             [:composer]
+             std/empty)))))
 
