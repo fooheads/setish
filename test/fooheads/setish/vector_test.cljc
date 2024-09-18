@@ -329,7 +329,36 @@
      {:composer-name "J. S. Bach"           :genre "Classical" :name "Musical Offering" :composer "J. S. Bach"}
      {:composer-name "J. S. Bach"           :genre "Baroque"   :name "Art of the Fugue" :composer "J. S. Bach"}
      {:composer-name "J. S. Bach"           :genre "Baroque"   :name "Musical Offering" :composer "J. S. Bach"}
-     {:composer-name "Ludwig van Beethoven" :genre "Classical"                          :composer nil}]))
+     {:composer-name "Ludwig van Beethoven" :genre "Classical"                          :composer nil}]
+
+    ;;
+    ;; left-join with nil should be identity + joined key
+    ;;
+    (set/left-join
+      compositions
+      nil
+      {:composer :composer-name})
+
+
+    [{:composer "J. S. Bach"     :name "Art of the Fugue"  :composer-name nil}
+     {:composer "J. S. Bach"     :name "Musical Offering"  :composer-name nil}
+     {:composer "Giuseppe Verdi" :name "Requiem"           :composer-name nil}
+     {:composer "W. A. Mozart"   :name "Requiem"           :composer-name nil}]
+
+
+    ;;
+    ;; left-join with non-existing join key should be identity + joined key
+    ;;
+    (set/left-join
+      compositions
+      nil
+      {:foo :composer-name})
+
+
+    [{:composer "J. S. Bach"     :name "Art of the Fugue"  :composer-name nil}
+     {:composer "J. S. Bach"     :name "Musical Offering"  :composer-name nil}
+     {:composer "Giuseppe Verdi" :name "Requiem"           :composer-name nil}
+     {:composer "W. A. Mozart"   :name "Requiem"           :composer-name nil}]))
 
 
 (deftest update-test

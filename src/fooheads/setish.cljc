@@ -182,10 +182,11 @@
   all keys in the km (possibly with nil values), and, when there is a match,
   all keys from the right."
   ([xrel yrel km]
-   (let [index (index yrel (vals km))]
+   (let [index (index yrel (vals km))
+         blank-left (zipmap (keys km) (repeat nil))]
      (reduce
        (fn [rel x]
-         (let [xprojection (select-keys x (keys km))
+         (let [xprojection (merge blank-left (select-keys x (keys km)))
                yprojection (rename-keys xprojection km)
                ys (or (get index yprojection)
                       (zipmap (keys yprojection) (repeat nil)))]
@@ -236,7 +237,7 @@
 
 (defn aggregate
   "Applies f to the xrel and returns a relation with one tuple.
-  
+
   In the case a map is provided in place of k and f, the same
   procedure will be applied to all pairs of k and f in m."
   ([xrel k f]
