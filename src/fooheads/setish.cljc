@@ -145,6 +145,17 @@
       xrel)))
 
 
+(defn project-away
+  "Returns a rel of the elements of xrel without the keys in ks"
+  [xrel attr-names]
+  (setish
+    (reduce
+      (fn [rel x]
+        (conj rel (apply dissoc x attr-names)))
+      (empty xrel)
+      xrel)))
+
+
 (defn rename
   "Returns a rel of the maps in xrel with the keys in kmap renamed to the vals in kmap"
   [xrel kmap]

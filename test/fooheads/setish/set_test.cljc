@@ -220,6 +220,22 @@
     #{{}}))
 
 
+(deftest project-away-test
+  (are [x y] (= x y)
+    (set/project-away compositions [:composer])
+    #{{:name "Art of the Fugue"}
+      {:name "Musical Offering"}
+      {:name "Requiem"}}
+
+    (set/project-away compositions [:name])
+    #{{:composer "J. S. Bach"}
+      {:composer "Giuseppe Verdi"}
+      {:composer "W. A. Mozart"}}
+
+    (set/project-away compositions [:composer :name]) #{{}}
+    (set/project-away #{{}} [:name]) #{{}}))
+
+
 (deftest rename-test
   (are [x y] (= x y)
     (set/rename compositions {:name :title})
