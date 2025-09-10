@@ -381,7 +381,21 @@
     [{:composer "J. S. Bach"     :name "Art of the Fugue"  :composer-name nil}
      {:composer "J. S. Bach"     :name "Musical Offering"  :composer-name nil}
      {:composer "Giuseppe Verdi" :name "Requiem"           :composer-name nil}
-     {:composer "W. A. Mozart"   :name "Requiem"           :composer-name nil}]))
+     {:composer "W. A. Mozart"   :name "Requiem"           :composer-name nil}]
+
+
+    ;;
+    ;; left-join when key exists on left but not on right should be left
+    ;;
+    (set/left-join
+      compositions
+      nil
+      {:composer :composer})
+
+    [{:composer "J. S. Bach"     :name "Art of the Fugue"}
+     {:composer "J. S. Bach"     :name "Musical Offering"}
+     {:composer "Giuseppe Verdi" :name "Requiem"}
+     {:composer "W. A. Mozart"   :name "Requiem"}]))
 
 
 (deftest update-test

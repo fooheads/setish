@@ -195,19 +195,23 @@
   all keys from the right."
   ([xrel yrel km]
    (let [index (index yrel (vals km))
-         blank-left (zipmap (keys km) (repeat nil))]
+         blank-left (zipmap (keys km) (repeat nil))
+         blank-right (zipmap (vals km) (repeat nil))]
      (reduce
        (fn [rel x]
          (let [xprojection (merge blank-left (select-keys x (keys km)))
                yprojection (rename-keys xprojection km)
-               ys (or (get index yprojection)
-                      (zipmap (keys yprojection) (repeat nil)))]
-           (reduce
-             (fn [rel y]
-               (let [merged (merge x y)]
-                 (conj rel merged)))
-             rel
-             ys)))
+               ys (get index yprojection)]
+
+           (if (seq ys)
+             (reduce
+               (fn [rel y]
+                 (let [merged (merge x y)]
+                   (conj rel merged)))
+               rel
+               ys)
+             (conj rel (merge blank-right x)))))
+
        (empty xrel)
        (setish xrel)))))
 
