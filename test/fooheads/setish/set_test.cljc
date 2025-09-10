@@ -306,7 +306,13 @@
               #{{:composer-name "J. S. Bach" :genre "Classical"}}
               {:composer :composer-name})
     #{{:composer-name "J. S. Bach" :genre "Classical" :name "Art of the Fugue" :composer "J. S. Bach"}
-      {:composer-name "J. S. Bach" :genre "Classical" :name "Musical Offering" :composer "J. S. Bach"}}))
+      {:composer-name "J. S. Bach" :genre "Classical" :name "Musical Offering" :composer "J. S. Bach"}}
+
+    ;;
+    ;; key join should be distinct
+    ;;
+    (set/join compositions compositions {:composer :composer})
+    compositions))
 
 
 (deftest left-join-test

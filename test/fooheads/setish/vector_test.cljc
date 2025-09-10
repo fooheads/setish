@@ -231,24 +231,6 @@
     (set/project-away [{}] [:name]) [{}]))
 
 
-(deftest rename-test
-  (are [x y] (= x y)
-    (set/rename compositions {:name :title})
-    [{:title "Art of the Fugue" :composer "J. S. Bach"}
-     {:title "Musical Offering" :composer "J. S. Bach"}
-     {:title "Requiem" :composer "Giuseppe Verdi"}
-     {:title "Requiem" :composer "W. A. Mozart"}]
-
-    (set/rename compositions {:year :decade})
-    [{:name "Art of the Fugue" :composer "J. S. Bach"}
-     {:name "Musical Offering" :composer "J. S. Bach"}
-     {:name "Requiem" :composer "Giuseppe Verdi"}
-     {:name "Requiem" :composer "W. A. Mozart"}]
-
-    (set/rename [{}] {:year :decade})
-    [{}]))
-
-
 (deftest join-test
   (are [x y] (= x y)
     ;;
@@ -301,7 +283,31 @@
               [{:composer-name "J. S. Bach" :genre "Classical"}]
               {:composer :composer-name})
     [{:name "Art of the Fugue" :composer "J. S. Bach" :composer-name "J. S. Bach" :genre "Classical"}
-     {:name "Musical Offering" :composer "J. S. Bach" :composer-name "J. S. Bach" :genre "Classical"}]))
+     {:name "Musical Offering" :composer "J. S. Bach" :composer-name "J. S. Bach" :genre "Classical"}]
+
+    ;;
+    ;; key join should be distinct
+    ;;
+    (set/join compositions compositions {:composer :composer})
+    compositions))
+
+
+(deftest rename-test
+  (are [x y] (= x y)
+    (set/rename compositions {:name :title})
+    [{:title "Art of the Fugue" :composer "J. S. Bach"}
+     {:title "Musical Offering" :composer "J. S. Bach"}
+     {:title "Requiem" :composer "Giuseppe Verdi"}
+     {:title "Requiem" :composer "W. A. Mozart"}]
+
+    (set/rename compositions {:year :decade})
+    [{:name "Art of the Fugue" :composer "J. S. Bach"}
+     {:name "Musical Offering" :composer "J. S. Bach"}
+     {:name "Requiem" :composer "Giuseppe Verdi"}
+     {:name "Requiem" :composer "W. A. Mozart"}]
+
+    (set/rename [{}] {:year :decade})
+    [{}]))
 
 
 (deftest left-join-test

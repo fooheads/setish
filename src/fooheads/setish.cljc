@@ -173,18 +173,19 @@
 
   ([xrel yrel km]
    (let [index (index yrel (vals km))]
-     (reduce
-       (fn [rel x]
-         (let [xprojection (select-keys x (keys km))
-               ys (get index (rename-keys xprojection km))]
-           (reduce
-             (fn [rel y]
-               (let [merged (merge x y)]
-                 (conj rel merged)))
-             rel
-             ys)))
-       (empty xrel)
-       (setish xrel)))))
+     (setish
+       (reduce
+         (fn [rel x]
+           (let [xprojection (select-keys x (keys km))
+                 ys (get index (rename-keys xprojection km))]
+             (reduce
+               (fn [rel y]
+                 (let [merged (merge x y)]
+                   (conj rel merged)))
+               rel
+               ys)))
+         (empty xrel)
+         (setish xrel))))))
 
 
 (defn left-join
